@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookstorespringboot.dao.BooksdataDao">
+
+    <resultMap type="com.example.bookstorespringboot.entity.Booksdata" id="BooksdataMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="author" column="author" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="INTEGER"/>
+        <result property="sales" column="sales" jdbcType="INTEGER"/>
+        <result property="cover" column="cover" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BooksdataMap">
+        select
+idtitleauthordescriptionpricesalescover
+        from booksdata
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BooksdataMap">
+        select
+idtitleauthordescriptionpricesalescover
+        from booksdata
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="author != null and author != ''">
+                and author = #{author}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="sales != null">
+                and sales = #{sales}
+            </if>
+            <if test="cover != null and cover != ''">
+                and cover = #{cover}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from booksdata
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="author != null and author != ''">
+                and author = #{author}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="sales != null">
+                and sales = #{sales}
+            </if>
+            <if test="cover != null and cover != ''">
+                and cover = #{cover}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into booksdata(titleauthordescriptionpricesalescover)
+        values (#{title}#{author}#{description}#{price}#{sales}#{cover})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into booksdata(titleauthordescriptionpricesalescover)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.title}#{entity.author}#{entity.description}#{entity.price}#{entity.sales}#{entity.cover})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into booksdata(titleauthordescriptionpricesalescover)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.title}#{entity.author}#{entity.description}#{entity.price}#{entity.sales}#{entity.cover})
+        </foreach>
+        on duplicate key update
+title = values(title)author = values(author)description = values(description)price = values(price)sales = values(sales)cover = values(cover)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update booksdata
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="author != null and author != ''">
+                author = #{author},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="sales != null">
+                sales = #{sales},
+            </if>
+            <if test="cover != null and cover != ''">
+                cover = #{cover},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from booksdata where id = #{id}
+    </delete>
+
+</mapper>
+
