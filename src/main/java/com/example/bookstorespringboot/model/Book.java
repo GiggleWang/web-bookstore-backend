@@ -1,5 +1,7 @@
 package com.example.bookstorespringboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,8 +32,13 @@ public class Book {
     @Column(name = "cover")
     private String cover;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CartItem> cartItems;
 
     // Getters and setters
     public Integer getId() {
@@ -88,5 +95,21 @@ public class Book {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public List<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
     }
 }
