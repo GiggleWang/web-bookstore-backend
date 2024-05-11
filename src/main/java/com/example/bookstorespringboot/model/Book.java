@@ -3,6 +3,7 @@ package com.example.bookstorespringboot.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Book {
     private String author;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private Integer price;
 
     @Column(name = "description")
     private String description;
@@ -65,11 +66,11 @@ public class Book {
         this.author = author;
     }
 
-    public BigDecimal getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

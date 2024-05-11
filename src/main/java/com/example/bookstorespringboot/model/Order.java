@@ -22,7 +22,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "total_price")
-    private BigDecimal totalPrice;
+    private Integer totalPrice;
 
     @Column(name = "shipping_address")
     private String shippingAddress;
@@ -49,7 +49,7 @@ public class Order {
         return orderDate;
     }
 
-    public BigDecimal getTotalPrice() {
+    public Integer getTotalPrice() {
         return totalPrice;
     }
 
@@ -78,7 +78,7 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
+    public void setTotalPrice(Integer totalPrice) {
         this.totalPrice = totalPrice;
     }
 

@@ -31,7 +31,7 @@ public class OrderItem {
     private Integer quantity;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private Integer price;
 
 
     // Getters and setters
@@ -52,7 +52,7 @@ public class OrderItem {
         return quantity;
     }
 
-    public BigDecimal getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
@@ -77,7 +77,7 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
