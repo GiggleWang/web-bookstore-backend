@@ -72,6 +72,8 @@ public class LoginService {
         session.setToken(jwt);
         userSessionRepository.save(session);
 
+
+
         // Prepare and return the response result
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);

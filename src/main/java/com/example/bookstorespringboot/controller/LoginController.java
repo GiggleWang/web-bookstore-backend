@@ -15,7 +15,7 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @PostMapping("api/login")
+    @PostMapping("/api/login")
     public ResponseResult login(@RequestBody LoginRequest loginRequest){
         System.out.println("Received email: " + loginRequest.getEmail());
         System.out.println("Received password: " + loginRequest.getPassword());

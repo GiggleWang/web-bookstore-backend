@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()  // 禁用CSRF保护
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // 允许所有来源的OPTIONS请求
-                .antMatchers("/api/login", "/api/user/login").permitAll()
+                .antMatchers("/api/login", "/api/user/login","/api/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
