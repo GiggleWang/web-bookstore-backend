@@ -52,15 +52,15 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> receiveOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         try {
-            System.out.println("orderRequest");
-            System.out.println(orderRequest.getAddress());
+//            System.out.println("orderRequest");
+//            System.out.println(orderRequest.getAddress());
             String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
             Claims claims = JwtUtil.parseJWT(token);
             String email = claims.getSubject();
             Integer userId = userAuthService.getIdByEmail(email);
 //            CartItem cartItem = cartItemService.addBookToCart(userId, cartRequest.getBookId(), cartRequest.getQuantity());
             List<OrderRequest.Item> list = orderRequest.getItems();
-            System.out.println(list);
+//            System.out.println(list);
             Integer totalPrice = 0;
             for (OrderRequest.Item item : list) {
                 Integer price = bookService.getPriceById(item.getBookId());
@@ -69,7 +69,7 @@ public class OrderController {
                     totalPrice += (price * number);
                 } else {
                     // 可以处理书籍价格未找到的情况，例如记录错误、返回错误响应等
-                    System.out.println("未找到ID为 " + item.getBookId() + " 的书籍价格。");
+//                    System.out.println("未找到ID为 " + item.getBookId() + " 的书籍价格。");
                 }
             }
             Order order = orderService.addOrder(userId, orderRequest.getAddress(), orderRequest.getReceiver(), totalPrice);

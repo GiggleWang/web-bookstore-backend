@@ -84,8 +84,8 @@ public class JwtUtil {
 //        System.out.println(claims);
         String jwt = createJWT("2123");
         Claims claims=parseJWT(jwt);
-        System.out.println(jwt);
-        System.out.println(claims.getSubject());
+//        System.out.println(jwt);
+//        System.out.println(claims.getSubject());
     }
 
     /**

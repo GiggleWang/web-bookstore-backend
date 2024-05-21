@@ -22,9 +22,9 @@ public class LoginController {
 
     @PostMapping("/api/login")
     public ResponseResult login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("Received email: " + loginRequest.getEmail());
-        System.out.println("Received password: " + loginRequest.getPassword());
-        System.out.println("Received type :" + loginRequest.getType());
+//        System.out.println("Received email: " + loginRequest.getEmail());
+//        System.out.println("Received password: " + loginRequest.getPassword());
+//        System.out.println("Received type :" + loginRequest.getType());
         return loginService.login(loginRequest);
     }
 

@@ -64,7 +64,7 @@ public class UserAuthService implements UserDetailsService {
         newUser.setType(type);
         userRepository.save(newUser);
 
-        System.out.println(password);
+//        System.out.println(password);
         return newUserAuth;
     }
 
