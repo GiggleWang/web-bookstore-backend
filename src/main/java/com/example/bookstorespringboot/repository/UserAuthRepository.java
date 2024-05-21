@@ -11,4 +11,7 @@ public interface UserAuthRepository extends JpaRepository<UserAuth, Integer> {
 
     @Query("SELECT ua.type FROM UserAuth ua WHERE ua.email = :email")
     Integer findTypeByEmail(@Param("email") String email);
+
+    @Query("SELECT ua.disabled FROM UserAuth ua WHERE ua.email = :email")
+    Boolean findDisabledByEmail(@Param("email") String email);
 }

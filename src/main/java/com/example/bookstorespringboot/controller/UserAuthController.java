@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class UserAuthController {
@@ -30,5 +32,23 @@ public class UserAuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/admin/disable/{userId}")
+    public ResponseEntity<?> disableUser(@PathVariable Integer userId) {
+        userAuthService.disableUser(userId);
+        return ResponseEntity.ok("User disabled successfully");
+    }
+
+    @PostMapping("/admin/enable/{userId}")
+    public ResponseEntity<?> enableUser(@PathVariable Integer userId) {
+        userAuthService.enableUser(userId);
+        return ResponseEntity.ok("User enabled successfully");
+    }
+
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<UserAuth>> getAllUsers() {
+        List<UserAuth> users = userAuthService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

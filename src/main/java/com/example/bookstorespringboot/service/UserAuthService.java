@@ -76,4 +76,21 @@ public class UserAuthService implements UserDetailsService {
             throw new RuntimeException("No user found with the given email: " + email);
         }
     }
+
+
+    public UserAuth disableUser(Integer userId) {
+        UserAuth userAuth = userAuthRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        userAuth.setDisabled(true);
+        return userAuthRepository.save(userAuth);
+    }
+
+    public UserAuth enableUser(Integer userId) {
+        UserAuth userAuth = userAuthRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        userAuth.setDisabled(false);
+        return userAuthRepository.save(userAuth);
+    }
+
+    public List<UserAuth> getAllUsers() {
+        return userAuthRepository.findAll();
+    }
 }

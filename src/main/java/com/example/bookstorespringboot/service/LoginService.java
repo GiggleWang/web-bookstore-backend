@@ -50,6 +50,11 @@ public class LoginService {
             return new ResponseResult(400, "用户不存在", null);
         }
 
+        Boolean disabled = userAuthRepository.findDisabledByEmail(email);
+
+        if (disabled == Boolean.TRUE) {
+            return new ResponseResult(400, "用户已被禁用", null);
+        }
         // 检查用户类型是否匹配
         if (!actualType.equals(type)) {
             return new ResponseResult(400, "用户类型不匹配", null);
