@@ -4,6 +4,7 @@ import com.example.bookstorespringboot.controller.ResponseResult;
 import com.example.bookstorespringboot.model.LoginRequest;
 import com.example.bookstorespringboot.model.UserAuth;
 import com.example.bookstorespringboot.model.UserSession;
+import com.example.bookstorespringboot.repository.UserAuthRepository;
 import com.example.bookstorespringboot.repository.UserSessionRepository;
 import com.example.bookstorespringboot.utils.JwtUtil;
 import com.example.bookstorespringboot.utils.RedisCache;
@@ -33,10 +34,26 @@ public class LoginService {
     @Autowired
     private UserSessionRepository userSessionRepository;
 
+    @Autowired
+    private UserAuthRepository userAuthRepository;
+
     public ResponseResult login(LoginRequest loginRequest) {
         // From LoginRequest, get email and password
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
+        Integer type = loginRequest.getType();
+
+        // 根据 email 从 user_auth 表中获取用户类型
+
+        Integer actualType = userAuthRepository.findTypeByEmail(email);
+        if (actualType == null) {
+            return new ResponseResult(400, "用户不存在", null);
+        }
+
+        // 检查用户类型是否匹配
+        if (!actualType.equals(type)) {
+            return new ResponseResult(400, "用户类型不匹配", null);
+        }
 
         // Create authentication token
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -73,7 +90,6 @@ public class LoginService {
         userSessionRepository.save(session);
 
 
-
         // Prepare and return the response result
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
@@ -88,9 +104,9 @@ public class LoginService {
 
             if (authenticationToken != null) {
                 // 安全地获取UserSession对象
-                UserSession userSession = (UserSession) authenticationToken.getPrincipal();
-                if (userSession != null) {
-                    String username = userSession.getUserId();
+                UserDetails userDetails = (UserDetails) authenticationToken.getPrincipal();
+                if (userDetails != null) {
+                    String username = userDetails.getUsername();
 
                     // 从数据库中删除对应的用户会话记录
                     userSessionRepository.deleteByUserId(username);

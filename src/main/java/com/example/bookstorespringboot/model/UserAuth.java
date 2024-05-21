@@ -5,6 +5,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "user_auth")
-public class UserAuth implements UserDetails{
+public class UserAuth implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -26,13 +30,16 @@ public class UserAuth implements UserDetails{
     @Column(name = "user_id")
     private Integer userId;
 
-    public UserAuth(String email, String encodedPassword ) {
+    private Integer type;
+
+    public UserAuth(String email, String encodedPassword) {
 
         this.email = email;
         this.password = encodedPassword;
         this.disabled = false;
     }
-    public UserAuth(String email, String encodedPassword ,Boolean disabled) {
+
+    public UserAuth(String email, String encodedPassword, Boolean disabled) {
 
         this.email = email;
         this.password = encodedPassword;
@@ -61,9 +68,12 @@ public class UserAuth implements UserDetails{
         this.email = email;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // 根据你的权限模型添加适当的权限
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getType() {
+        return this.type;
     }
 
     public String getPassword() {
@@ -73,6 +83,12 @@ public class UserAuth implements UserDetails{
     @Override
     public String getUsername() {
         return this.email;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = type == 1 ? "ROLE_ADMIN" : "ROLE_USER";
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
@@ -92,7 +108,7 @@ public class UserAuth implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return !disabled;
     }
 
     public void setPassword(String password) {

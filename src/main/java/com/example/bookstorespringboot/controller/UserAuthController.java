@@ -19,9 +19,13 @@ public class UserAuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody LoginRequest userAuth) {
         try {
-            UserAuth registeredUser = userAuthService.registerUser(userAuth.getEmail(), userAuth.getPassword(),userAuth.getAddress(),userAuth.getName(),userAuth.getTelephone(),userAuth.getType());
-            System.out.println(userAuth.getEmail()+" "+userAuth.getPassword());
-
+            UserAuth registeredUser = userAuthService.registerUser(
+                    userAuth.getEmail(),
+                    userAuth.getPassword(),
+                    userAuth.getAddress(),
+                    userAuth.getName(),
+                    userAuth.getTelephone(),
+                    userAuth.getType());
             return ResponseEntity.ok(registeredUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());

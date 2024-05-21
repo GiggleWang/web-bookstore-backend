@@ -15,16 +15,21 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    @PostMapping("/api/admin")
+    public String test() {
+        return "success";
+    }
+
     @PostMapping("/api/login")
-    public ResponseResult login(@RequestBody LoginRequest loginRequest){
+    public ResponseResult login(@RequestBody LoginRequest loginRequest) {
         System.out.println("Received email: " + loginRequest.getEmail());
         System.out.println("Received password: " + loginRequest.getPassword());
-
+        System.out.println("Received type :" + loginRequest.getType());
         return loginService.login(loginRequest);
     }
 
     @RequestMapping("/api/logout")
-    public ResponseResult logout(){
+    public ResponseResult logout() {
         return loginService.logout();
     }
 
