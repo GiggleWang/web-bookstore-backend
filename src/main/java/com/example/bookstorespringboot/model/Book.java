@@ -3,8 +3,6 @@ package com.example.bookstorespringboot.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -33,6 +31,12 @@ public class Book {
     @Column(name = "cover")
     private String cover;
 
+    @Column(name = "ISBN", nullable = false)
+    private String ISBN;
+
+    @Column(name = "left_num", nullable = true, columnDefinition = "int default 0")
+    private Integer leftNum;
+
     @JsonIgnore
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
@@ -48,6 +52,14 @@ public class Book {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getLeftNum() {
+        return leftNum;
+    }
+
+    public void setLeftNum(Integer leftNum) {
+        this.leftNum = leftNum;
     }
 
     public String getName() {
@@ -96,6 +108,14 @@ public class Book {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public String getISBN() {
+        return ISBN;
+    }
+
+    public void setISBN(String ISBN) {
+        this.ISBN = ISBN;
     }
 
     public List<OrderItem> getOrderItems() {
