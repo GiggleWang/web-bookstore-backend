@@ -19,7 +19,7 @@ public class CartItemService {
     private BookRepository bookRepository;
 
     public List<CartItem> findAllCartItemsByUserId(Integer userId) {
-        return cartItemRepository.findAll(); // 这里应该添加过滤条件以根据userId获取购物车项目
+        return cartItemRepository.findAllByUserId(userId); // 这里应该添加过滤条件以根据userId获取购物车项目
     }
 
     public CartItem addCartItem(CartItem cartItem) {
