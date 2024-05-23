@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -17,6 +19,32 @@ public class UserAuthController {
 
     @Autowired
     private UserAuthService userAuthService;
+
+    @GetMapping("/check-email")
+    public ResponseEntity<?> checkEmailExists(@RequestParam String email) {
+        Optional<UserAuth> userAuth = userAuthService.findUserByEmail(email);
+
+        if (userAuth.isPresent()) {
+            // 如果邮箱存在，则返回存在的状态
+            return ResponseEntity.ok(Collections.singletonMap("exists", true));
+        } else {
+            // 如果邮箱不存在，则返回不存在的状态
+            return ResponseEntity.ok(Collections.singletonMap("exists", false));
+        }
+    }
+
+    @GetMapping("/check-name")
+    public ResponseEntity<?> checkNameExists(@RequestParam String name) {
+        Optional<Users> users = userAuthService.findUserByName(name);
+
+        if (users.isPresent()) {
+            // 如果邮箱存在，则返回存在的状态
+            return ResponseEntity.ok(Collections.singletonMap("exists", true));
+        } else {
+            // 如果邮箱不存在，则返回不存在的状态
+            return ResponseEntity.ok(Collections.singletonMap("exists", false));
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody LoginRequest userAuth) {

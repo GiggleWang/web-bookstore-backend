@@ -93,4 +93,12 @@ public class UserAuthService implements UserDetailsService {
     public List<UserAuth> getAllUsers() {
         return userAuthRepository.findAll();
     }
+
+    public Optional<UserAuth> findUserByEmail(String email) {
+        return userAuthRepository.findByEmail(email);
+    }
+
+    public Optional<Users> findUserByName(String name) {
+        return userRepository.findByName(name);
+    }
 }
