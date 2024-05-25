@@ -34,14 +34,16 @@ public class OrderController {
     private BookService bookService;
 
     @GetMapping("/api/order")
-    public ResponseEntity<?> getOrdersByToken(HttpServletRequest request) {
+    public ResponseEntity<?> getOrdersByToken(HttpServletRequest request,@RequestParam(value = "bookName", required = false) String bookName,
+                                              @RequestParam(value = "startDate", required = false) String startDate,
+                                              @RequestParam(value = "endDate", required = false) String endDate) {
         try {
             String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
             Claims claims = JwtUtil.parseJWT(token);
             String email = claims.getSubject();
             // Assuming you have a method to get user ID by email
             Integer userId = userAuthService.getIdByEmail(email);
-            List<Order> orders = orderService.getOrdersByUserId(userId);
+            List<Order> orders = orderService.getOrdersByUserId(userId,bookName, startDate, endDate);
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Invalid token or user not found");
@@ -51,15 +53,11 @@ public class OrderController {
     @PostMapping("/api/order")
     public ResponseEntity<?> receiveOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         try {
-//            System.out.println("orderRequest");
-//            System.out.println(orderRequest.getAddress());
             String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
             Claims claims = JwtUtil.parseJWT(token);
             String email = claims.getSubject();
             Integer userId = userAuthService.getIdByEmail(email);
-//            CartItem cartItem = cartItemService.addBookToCart(userId, cartRequest.getBookId(), cartRequest.getQuantity());
             List<OrderRequest.Item> list = orderRequest.getItems();
-//            System.out.println(list);
             Integer totalPrice = 0;
             for (OrderRequest.Item item : list) {
                 Integer price = bookService.getPriceById(item.getBookId());

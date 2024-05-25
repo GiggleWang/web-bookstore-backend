@@ -30,11 +30,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public List<Order> getOrdersByUserId(Integer userId) {
-        List<Order> orders = orderRepository.findByUserIdWithBooks(userId);
-        logger.info("Orders retrieved for userId {}: {}", userId, orders);
-        return orders;
-    }
+
     @Transactional
     public Order addOrder(Integer userId,String address,String receiver,Integer price)
     {
@@ -74,4 +70,30 @@ public class OrderService {
         return orders;
     }
 
+    public List<Order> getOrdersByUserId(Integer userId,String bookName, String startDate, String endDate) {
+        List<Order> orders = orderRepository.findByUserIdWithBooks(userId);
+        logger.info("Orders retrieved for userId {}: {}", userId, orders);
+        // 过滤书籍名称
+        if (bookName != null && !bookName.isEmpty()) {
+            orders = orders.stream()
+                    .filter(order -> order.getItems().stream()
+                            .anyMatch(item -> item.getBookName().toLowerCase().contains(bookName.toLowerCase())))
+                    .collect(Collectors.toList());
+        }
+
+        // 过滤日期范围
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (startDate != null && endDate != null) {
+            LocalDateTime start = LocalDateTime.parse(startDate + "T00:00:00");
+            LocalDateTime end = LocalDateTime.parse(endDate + "T23:59:59");
+            orders = orders.stream()
+                    .filter(order -> {
+                        LocalDateTime orderDate = order.getOrderDate();
+                        return (orderDate.isEqual(start) || orderDate.isAfter(start)) && (orderDate.isEqual(end) || orderDate.isBefore(end));
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return orders;
+    }
 }
