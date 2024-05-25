@@ -1,9 +1,6 @@
 package com.example.bookstorespringboot.service;
 
-import com.example.bookstorespringboot.model.Order;
-import com.example.bookstorespringboot.model.OrderItem;
-import com.example.bookstorespringboot.model.SalesStatistics;
-import com.example.bookstorespringboot.model.UserStatistics;
+import com.example.bookstorespringboot.model.*;
 import com.example.bookstorespringboot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,5 +125,22 @@ public class OrderService {
                 .map(entry -> new UserStatistics(entry.getKey(), entry.getValue()))
                 .sorted((a, b) -> Long.compare(b.getTotalPurchase(), a.getTotalPurchase()))
                 .collect(Collectors.toList());
+    }
+
+    public UserPurchaseStatistics getUserPurchaseStatistics(Integer userId, LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        List<Order> orders = orderRepository.findByUserIdAndOrderDateBetween(userId, start, end);
+
+        Map<String, Long> bookQuantityMap = orders.stream()
+                .flatMap(order -> order.getItems().stream())
+                .collect(Collectors.groupingBy(OrderItem::getBookName, Collectors.summingLong(OrderItem::getQuantity)));
+
+        long totalBooks = bookQuantityMap.values().stream().mapToLong(Long::longValue).sum();
+        long totalAmount = orders.stream()
+                .flatMap(order -> order.getItems().stream())
+                .mapToLong(OrderItem::getPrice).sum(); // 直接使用单价
+
+        return new UserPurchaseStatistics(bookQuantityMap, totalBooks, totalAmount);
     }
 }

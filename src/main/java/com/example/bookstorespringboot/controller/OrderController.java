@@ -117,4 +117,22 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
         }
     }
+
+    @GetMapping("/api/user/statistics/purchase")
+    public ResponseEntity<?> getUserPurchaseStatistics(
+            HttpServletRequest request,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        try {
+            String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
+            Claims claims = JwtUtil.parseJWT(token);
+            String email = claims.getSubject();
+            // Assuming you have a method to get user ID by email
+            Integer userId = userAuthService.getIdByEmail(email);
+            UserPurchaseStatistics statistics = orderService.getUserPurchaseStatistics(userId, startDate, endDate);
+            return ResponseEntity.ok(statistics);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
+        }
+    }
 }
