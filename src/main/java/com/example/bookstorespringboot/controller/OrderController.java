@@ -1,8 +1,6 @@
 package com.example.bookstorespringboot.controller;
 
-import com.example.bookstorespringboot.model.CartItem;
-import com.example.bookstorespringboot.model.Order;
-import com.example.bookstorespringboot.model.OrderRequest;
+import com.example.bookstorespringboot.model.*;
 import com.example.bookstorespringboot.repository.BookRepository;
 import com.example.bookstorespringboot.repository.OrderItemRepository;
 import com.example.bookstorespringboot.repository.OrderRepository;
@@ -10,10 +8,12 @@ import com.example.bookstorespringboot.service.*;
 import com.example.bookstorespringboot.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -89,6 +89,30 @@ public class OrderController {
         try {
             List<Order> orders = orderService.getAllOrders(bookName, startDate, endDate);
             return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/admin/statistics/sales")
+    public ResponseEntity<?> getSalesStatistics(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        try {
+            List<SalesStatistics> salesStatistics = orderService.getSalesStatistics(startDate, endDate);
+            return ResponseEntity.ok(salesStatistics);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/admin/statistics/users")
+    public ResponseEntity<?> getUserStatistics(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        try {
+            List<UserStatistics> userStatistics = orderService.getUserStatistics(startDate, endDate);
+            return ResponseEntity.ok(userStatistics);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
         }

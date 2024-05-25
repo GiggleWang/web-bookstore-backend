@@ -1,6 +1,9 @@
 package com.example.bookstorespringboot.service;
 
 import com.example.bookstorespringboot.model.Order;
+import com.example.bookstorespringboot.model.OrderItem;
+import com.example.bookstorespringboot.model.SalesStatistics;
+import com.example.bookstorespringboot.model.UserStatistics;
 import com.example.bookstorespringboot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mysql.cj.conf.PropertyKey.logger;
@@ -95,5 +99,34 @@ public class OrderService {
         }
 
         return orders;
+    }
+
+    public List<SalesStatistics> getSalesStatistics(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        List<Order> orders = orderRepository.findByOrderDateBetween(start, end);
+
+        Map<String, Long> salesMap = orders.stream()
+                .flatMap(order -> order.getItems().stream())
+                .collect(Collectors.groupingBy(OrderItem::getBookName, Collectors.summingLong(OrderItem::getQuantity)));
+
+        return salesMap.entrySet().stream()
+                .map(entry -> new SalesStatistics(entry.getKey(), entry.getValue()))
+                .sorted((a, b) -> Long.compare(b.getSales(), a.getSales()))
+                .collect(Collectors.toList());
+    }
+
+    public List<UserStatistics> getUserStatistics(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        List<Order> orders = orderRepository.findByOrderDateBetween(start, end);
+
+        Map<Integer, Long> userMap = orders.stream()
+                .collect(Collectors.groupingBy(Order::getUserId, Collectors.summingLong(Order::getTotalPrice)));
+
+        return userMap.entrySet().stream()
+                .map(entry -> new UserStatistics(entry.getKey(), entry.getValue()))
+                .sorted((a, b) -> Long.compare(b.getTotalPurchase(), a.getTotalPurchase()))
+                .collect(Collectors.toList());
     }
 }
