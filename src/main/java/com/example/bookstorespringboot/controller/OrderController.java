@@ -2,12 +2,14 @@ package com.example.bookstorespringboot.controller;
 
 import com.example.bookstorespringboot.model.*;
 import com.example.bookstorespringboot.repository.BookRepository;
+import com.example.bookstorespringboot.repository.CartItemRepository;
 import com.example.bookstorespringboot.repository.OrderItemRepository;
 import com.example.bookstorespringboot.repository.OrderRepository;
 import com.example.bookstorespringboot.service.*;
 import com.example.bookstorespringboot.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -32,6 +35,8 @@ public class OrderController {
     private BookRepository bookRepository;
     @Autowired
     private BookService bookService;
+
+    private CartItemRepository cartItemRepository;
 
     @GetMapping("/api/order")
     public ResponseEntity<?> getOrdersByToken(HttpServletRequest request,@RequestParam(value = "bookName", required = false) String bookName,
@@ -59,9 +64,21 @@ public class OrderController {
             Integer userId = userAuthService.getIdByEmail(email);
             List<OrderRequest.Item> list = orderRequest.getItems();
             Integer totalPrice = 0;
+            for(OrderRequest.Item item : list)
+            {
+                Integer number = item.getQuantity();
+                Integer id = item.getBookId();
+                Book book = bookService.findBookById(id);
+                if(book.getLeftNum()<number)
+                {
+                    return ResponseEntity.badRequest().body("库存不足");
+                }
+            }
             for (OrderRequest.Item item : list) {
                 Integer price = bookService.getPriceById(item.getBookId());
                 Integer number = item.getQuantity();
+                Integer id = item.getBookId();
+                bookService.increaseSalesAndDecreaseStock(id, number);
                 if (price != null) {
                     totalPrice += (price * number);
                 } else {

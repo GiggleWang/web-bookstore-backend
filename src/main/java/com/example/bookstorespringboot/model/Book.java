@@ -133,4 +133,20 @@ public class Book {
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
     }
+
+    // 增加销量的方法
+    public void increaseSales(int quantity) {
+        if (quantity > 0) {
+            this.sales += quantity;
+        }
+    }
+
+    // 减少库存的方法
+    public void decreaseStock(int quantity) {
+        if (quantity > 0 && this.leftNum >= quantity) {
+            this.leftNum -= quantity;
+        } else {
+            throw new IllegalArgumentException("库存不足或数量无效");
+        }
+    }
 }

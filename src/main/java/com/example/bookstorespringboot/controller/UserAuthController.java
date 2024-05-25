@@ -2,13 +2,18 @@ package com.example.bookstorespringboot.controller;
 
 import com.example.bookstorespringboot.model.LoginRequest;
 import com.example.bookstorespringboot.model.UserAuth;
+import com.example.bookstorespringboot.model.UserPurchaseStatistics;
 import com.example.bookstorespringboot.model.Users;
+import com.example.bookstorespringboot.repository.UserRepository;
 import com.example.bookstorespringboot.service.UserAuthService;
 import com.example.bookstorespringboot.service.UserService;
+import com.example.bookstorespringboot.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +24,8 @@ public class UserAuthController {
 
     @Autowired
     private UserAuthService userAuthService;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/check-email")
     public ResponseEntity<?> checkEmailExists(@RequestParam String email) {
@@ -78,5 +85,18 @@ public class UserAuthController {
     public ResponseEntity<List<UserAuth>> getAllUsers() {
         List<UserAuth> users = userAuthService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/user/me")
+    public ResponseEntity<?> UserInfo(HttpServletRequest request) {
+        try {
+            String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
+            Claims claims = JwtUtil.parseJWT(token);
+            String email = claims.getSubject();
+            Users users = userRepository.getByEmail(email);
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
+        }
     }
 }
