@@ -20,10 +20,15 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookService.findAllBooks());
+    public ResponseEntity<List<Book>> getAllBooks(@RequestParam(value = "name", required = false) String name) {
+        List<Book> books;
+        if (name != null && !name.isEmpty()) {
+            books = bookService.findBooksByName(name);
+        } else {
+            books = bookService.findAllBooks();
+        }
+        return ResponseEntity.ok(books);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
         Book book = bookService.findBookById(id);

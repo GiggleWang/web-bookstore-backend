@@ -18,7 +18,6 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/order")
 public class OrderController {
 
     @Autowired
@@ -34,7 +33,7 @@ public class OrderController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping
+    @GetMapping("/api/order")
     public ResponseEntity<?> getOrdersByToken(HttpServletRequest request) {
         try {
             String token = request.getHeader("token");  // 直接从 "token" header 中获取 token，不需要 "Bearer " 前缀
@@ -49,7 +48,7 @@ public class OrderController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/api/order")
     public ResponseEntity<?> receiveOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         try {
 //            System.out.println("orderRequest");
@@ -84,4 +83,16 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Invalid token or error in processing order: " + e.getMessage());
         }
     }
+
+    // OrderController.java
+    @GetMapping("/api/admin/order")
+    public ResponseEntity<?> getAllOrders(HttpServletRequest request) {
+        try {
+            List<Order> orders = orderService.getAllOrders();
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("error in processing request: " + e.getMessage());
+        }
+    }
+
 }

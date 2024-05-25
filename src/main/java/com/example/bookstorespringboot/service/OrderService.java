@@ -32,7 +32,6 @@ public class OrderService {
         logger.info("Orders retrieved for userId {}: {}", userId, orders);
         return orders;
     }
-
     @Transactional
     public Order addOrder(Integer userId,String address,String receiver,Integer price)
     {
@@ -43,6 +42,10 @@ public class OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setTotalPrice(price);
         return orderRepository.save(order);
+    }
+    @Transactional
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
 }

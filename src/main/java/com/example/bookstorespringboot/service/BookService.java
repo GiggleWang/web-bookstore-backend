@@ -38,4 +38,10 @@ public class BookService {
         Optional<Book> book = bookRepository.findById(bookId);
         return book.map(Book::getPrice).orElse(null);
     }
+
+    public List<Book> findBooksByName(String name) {
+        // 假设你有一个方法在BookRepository中执行搜索
+        return bookRepository.findByNameContainingIgnoreCase(name);
+    }
+
 }
