@@ -85,4 +85,7 @@ public class OrderItem {
         this.book = book;
     }
 
+    public String getBookName() {
+        return  book.getName();
+    }
 }

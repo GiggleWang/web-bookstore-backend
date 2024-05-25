@@ -5,8 +5,11 @@ import com.example.bookstorespringboot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mysql.cj.conf.PropertyKey.logger;
 import org.slf4j.Logger;
@@ -44,8 +47,31 @@ public class OrderService {
         return orderRepository.save(order);
     }
     @Transactional
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<Order> getAllOrders(String bookName, String startDate, String endDate) {
+        List<Order> orders = orderRepository.findAll();
+
+        // 过滤书籍名称
+        if (bookName != null && !bookName.isEmpty()) {
+            orders = orders.stream()
+                    .filter(order -> order.getItems().stream()
+                            .anyMatch(item -> item.getBookName().toLowerCase().contains(bookName.toLowerCase())))
+                    .collect(Collectors.toList());
+        }
+
+        // 过滤日期范围
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (startDate != null && endDate != null) {
+            LocalDateTime start = LocalDateTime.parse(startDate + "T00:00:00");
+            LocalDateTime end = LocalDateTime.parse(endDate + "T23:59:59");
+            orders = orders.stream()
+                    .filter(order -> {
+                        LocalDateTime orderDate = order.getOrderDate();
+                        return (orderDate.isEqual(start) || orderDate.isAfter(start)) && (orderDate.isEqual(end) || orderDate.isBefore(end));
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return orders;
     }
 
 }

@@ -83,16 +83,16 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Invalid token or error in processing order: " + e.getMessage());
         }
     }
-
-    // OrderController.java
     @GetMapping("/api/admin/order")
-    public ResponseEntity<?> getAllOrders(HttpServletRequest request) {
+    public ResponseEntity<?> getAllOrders(
+            @RequestParam(value = "bookName", required = false) String bookName,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate) {
         try {
-            List<Order> orders = orderService.getAllOrders();
+            List<Order> orders = orderService.getAllOrders(bookName, startDate, endDate);
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("error in processing request: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error in processing request: " + e.getMessage());
         }
     }
-
 }
