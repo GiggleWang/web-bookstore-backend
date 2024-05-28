@@ -20,14 +20,29 @@ public class BookService {
     }
 
     public List<Book> findAllBooks() {
+        return bookRepository.findByActive(true);
+    }
+
+    public List<Book> findBooksByName(String name) {
+        return bookRepository.findByNameContainingIgnoreCaseAndActive(name, true);
+    }
+
+    public List<Book> findAllBooksAdmin() {
         return bookRepository.findAll();
     }
+
+    public List<Book> findBooksByNameAdmin(String name) {
+        return bookRepository.findByNameContainingIgnoreCase(name);
+    }
+
 
     public Book findBookById(Integer id) {
         return bookRepository.findById(id).orElse(null);
     }
 
     public Book saveBook(Book book) {
+        book.setActive(true);
+        book.setSales(0);
         return bookRepository.save(book);
     }
 
@@ -38,11 +53,6 @@ public class BookService {
     public Integer getPriceById(Integer bookId) {
         Optional<Book> book = bookRepository.findById(bookId);
         return book.map(Book::getPrice).orElse(null);
-    }
-
-    public List<Book> findBooksByName(String name) {
-        // 假设你有一个方法在BookRepository中执行搜索
-        return bookRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Transactional
@@ -56,4 +66,10 @@ public class BookService {
         bookRepository.save(book);
     }
 
+    public Book toggleBookStatus(Integer bookId, Boolean active) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("书籍未找到"));
+        book.setActive(active);
+        return bookRepository.save(book);
+    }
 }

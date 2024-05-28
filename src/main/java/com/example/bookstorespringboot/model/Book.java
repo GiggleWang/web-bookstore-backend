@@ -37,6 +37,9 @@ public class Book {
     @Column(name = "left_num", nullable = true, columnDefinition = "int default 0")
     private Integer leftNum;
 
+    @Column(name = "active")
+    private Boolean active;
+
     @JsonIgnore
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
@@ -132,6 +135,14 @@ public class Book {
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return this.active;
     }
 
     // 增加销量的方法

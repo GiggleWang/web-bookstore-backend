@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
     List<Book> findByNameContainingIgnoreCase(String name);
+    List<Book> findByActive(Boolean active);
+    List<Book> findByNameContainingIgnoreCaseAndActive(String name, Boolean active);
 }

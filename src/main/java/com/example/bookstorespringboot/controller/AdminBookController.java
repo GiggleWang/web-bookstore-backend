@@ -1,6 +1,7 @@
 package com.example.bookstorespringboot.controller;
 
 import com.example.bookstorespringboot.model.Book;
+import com.example.bookstorespringboot.model.BookStatusRequest;
 import com.example.bookstorespringboot.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,9 @@ public class AdminBookController {
     public ResponseEntity<List<Book>> getAllBooks(@RequestParam(value = "name", required = false) String name) {
         List<Book> books;
         if (name != null && !name.isEmpty()) {
-            books = bookService.findBooksByName(name);
+            books = bookService.findBooksByNameAdmin(name);
         } else {
-            books = bookService.findAllBooks();
+            books = bookService.findAllBooksAdmin();
         }
         return ResponseEntity.ok(books);
     }
@@ -64,5 +65,11 @@ public class AdminBookController {
         }
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Book> toggleBookStatus(@PathVariable Integer id, @RequestBody BookStatusRequest request) {
+        Book updatedBook = bookService.toggleBookStatus(id, request.getActive());
+        return ResponseEntity.ok(updatedBook);
     }
 }
