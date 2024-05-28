@@ -3,6 +3,8 @@ package com.example.bookstorespringboot.service;
 import com.example.bookstorespringboot.model.*;
 import com.example.bookstorespringboot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -43,59 +45,24 @@ public class OrderService {
         order.setTotalPrice(price);
         return orderRepository.save(order);
     }
-    @Transactional
-    public List<Order> getAllOrders(String bookName, String startDate, String endDate) {
-        List<Order> orders = orderRepository.findAll();
-
-        // 过滤书籍名称
+    public Page<Order> getAllOrders(String bookName, String startDate, String endDate, Pageable pageable) {
         if (bookName != null && !bookName.isEmpty()) {
-            orders = orders.stream()
-                    .filter(order -> order.getItems().stream()
-                            .anyMatch(item -> item.getBookName().toLowerCase().contains(bookName.toLowerCase())))
-                    .collect(Collectors.toList());
+            LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate + "T00:00:00") : LocalDateTime.MIN;
+            LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate + "T23:59:59") : LocalDateTime.MAX;
+            return orderRepository.findByBookNameContaining(bookName, start, end, pageable);
+        } else {
+            return orderRepository.findAll(pageable);
         }
-
-        // 过滤日期范围
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        if (startDate != null && endDate != null) {
-            LocalDateTime start = LocalDateTime.parse(startDate + "T00:00:00");
-            LocalDateTime end = LocalDateTime.parse(endDate + "T23:59:59");
-            orders = orders.stream()
-                    .filter(order -> {
-                        LocalDateTime orderDate = order.getOrderDate();
-                        return (orderDate.isEqual(start) || orderDate.isAfter(start)) && (orderDate.isEqual(end) || orderDate.isBefore(end));
-                    })
-                    .collect(Collectors.toList());
-        }
-
-        return orders;
     }
 
-    public List<Order> getOrdersByUserId(Integer userId,String bookName, String startDate, String endDate) {
-        List<Order> orders = orderRepository.findByUserIdWithBooks(userId);
-        logger.info("Orders retrieved for userId {}: {}", userId, orders);
-        // 过滤书籍名称
+    public Page<Order> getOrdersByUserId(Integer userId, String bookName, String startDate, String endDate, Pageable pageable) {
         if (bookName != null && !bookName.isEmpty()) {
-            orders = orders.stream()
-                    .filter(order -> order.getItems().stream()
-                            .anyMatch(item -> item.getBookName().toLowerCase().contains(bookName.toLowerCase())))
-                    .collect(Collectors.toList());
+            LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate + "T00:00:00") : LocalDateTime.MIN;
+            LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate + "T23:59:59") : LocalDateTime.MAX;
+            return orderRepository.findByUserIdAndBookNameContaining(userId, bookName, start, end, pageable);
+        } else {
+            return orderRepository.findByUserId(userId, pageable);
         }
-
-        // 过滤日期范围
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        if (startDate != null && endDate != null) {
-            LocalDateTime start = LocalDateTime.parse(startDate + "T00:00:00");
-            LocalDateTime end = LocalDateTime.parse(endDate + "T23:59:59");
-            orders = orders.stream()
-                    .filter(order -> {
-                        LocalDateTime orderDate = order.getOrderDate();
-                        return (orderDate.isEqual(start) || orderDate.isAfter(start)) && (orderDate.isEqual(end) || orderDate.isBefore(end));
-                    })
-                    .collect(Collectors.toList());
-        }
-
-        return orders;
     }
 
     public List<SalesStatistics> getSalesStatistics(LocalDate startDate, LocalDate endDate) {

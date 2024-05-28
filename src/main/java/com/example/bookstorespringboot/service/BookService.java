@@ -3,6 +3,8 @@ package com.example.bookstorespringboot.service;
 import com.example.bookstorespringboot.model.Book;
 import com.example.bookstorespringboot.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +21,21 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> findAllBooks() {
-        return bookRepository.findByActive(true);
+    public Page<Book> findAllBooksAdmin(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
-    public List<Book> findBooksByName(String name) {
-        return bookRepository.findByNameContainingIgnoreCaseAndActive(name, true);
+    public Page<Book> findBooksByNameAdmin(String name, Pageable pageable) {
+        return bookRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
-    public List<Book> findAllBooksAdmin() {
-        return bookRepository.findAll();
+    public Page<Book> findAllBooks(Pageable pageable) {
+        return bookRepository.findByActive(true, pageable);
     }
 
-    public List<Book> findBooksByNameAdmin(String name) {
-        return bookRepository.findByNameContainingIgnoreCase(name);
+    public Page<Book> findBooksByName(String name, Pageable pageable) {
+        return bookRepository.findByNameContainingIgnoreCaseAndActive(name, true,pageable);
     }
-
 
     public Book findBookById(Integer id) {
         return bookRepository.findById(id).orElse(null);

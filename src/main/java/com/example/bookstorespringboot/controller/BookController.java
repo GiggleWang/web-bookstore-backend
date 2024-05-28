@@ -3,10 +3,16 @@ package com.example.bookstorespringboot.controller;
 import com.example.bookstorespringboot.model.Book;
 import com.example.bookstorespringboot.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
@@ -20,14 +26,31 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks(@RequestParam(value = "name", required = false) String name) {
-        List<Book> books;
-        if (name != null && !name.isEmpty()) {
-            books = bookService.findBooksByName(name);
-        } else {
-            books = bookService.findAllBooks();
+    public ResponseEntity<Map<String, Object>> getAllBooks(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        try {
+            Pageable paging = PageRequest.of(page, size);
+            Page<Book> pageBooks;
+
+            if (name != null && !name.isEmpty()) {
+                pageBooks = bookService.findBooksByName(name, paging);
+            } else {
+                pageBooks = bookService.findAllBooks(paging);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("books", pageBooks.getContent());
+            response.put("currentPage", pageBooks.getNumber());
+            response.put("totalItems", pageBooks.getTotalElements());
+            response.put("totalPages", pageBooks.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(books);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
