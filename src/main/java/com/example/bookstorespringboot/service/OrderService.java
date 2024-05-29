@@ -46,21 +46,59 @@ public class OrderService {
         return orderRepository.save(order);
     }
     public Page<Order> getAllOrders(String bookName, String startDate, String endDate, Pageable pageable) {
-        if (bookName != null && !bookName.isEmpty()) {
-            LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate + "T00:00:00") : LocalDateTime.MIN;
-            LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate + "T23:59:59") : LocalDateTime.MAX;
-            return orderRepository.findByBookNameContaining(bookName, start, end, pageable);
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        System.out.println("1");
+        // 解析日期，如果提供了有效日期
+        if (startDate != null && !startDate.isEmpty()) {
+            start = LocalDateTime.parse(startDate + "T00:00:00", formatter);
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            end = LocalDateTime.parse(endDate + "T23:59:59", formatter);
+        }
+        System.out.println("2");
+        // 根据不同的条件调用不同的查询方法
+        if (bookName != null && !bookName.isEmpty() && start != null && end != null) {
+            // 书名和日期范围都提供
+            return orderRepository.findByBookNameAndDateRange(bookName, start, end, pageable);
+        } else if (bookName != null && !bookName.isEmpty()) {
+            // 只提供了书名
+            return orderRepository.findByBookName(bookName, pageable);
+        } else if (start != null && end != null) {
+            // 只提供了日期范围
+            return orderRepository.findByDateRange(start, end, pageable);
         } else {
+            // 没有提供任何筛选条件
             return orderRepository.findAll(pageable);
         }
     }
 
     public Page<Order> getOrdersByUserId(Integer userId, String bookName, String startDate, String endDate, Pageable pageable) {
-        if (bookName != null && !bookName.isEmpty()) {
-            LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate + "T00:00:00") : LocalDateTime.MIN;
-            LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate + "T23:59:59") : LocalDateTime.MAX;
-            return orderRepository.findByUserIdAndBookNameContaining(userId, bookName, start, end, pageable);
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        // 解析日期，如果提供了有效日期
+        if (startDate != null && !startDate.isEmpty()) {
+            start = LocalDateTime.parse(startDate + "T00:00:00", formatter);
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            end = LocalDateTime.parse(endDate + "T23:59:59", formatter);
+        }
+
+        // 根据不同的条件调用不同的查询方法
+        if (bookName != null && !bookName.isEmpty() && start != null && end != null) {
+            // 书名和日期范围都提供
+            return orderRepository.findByUserIdAndBookNameAndDateRange(userId, bookName, start, end, pageable);
+        } else if (bookName != null && !bookName.isEmpty()) {
+            // 只提供了书名
+            return orderRepository.findByUserIdAndBookName(userId, bookName, pageable);
+        } else if (start != null && end != null) {
+            // 只提供了日期范围
+            return orderRepository.findByUserIdAndDateRange(userId, start, end, pageable);
         } else {
+            // 只根据用户ID查询
             return orderRepository.findByUserId(userId, pageable);
         }
     }
