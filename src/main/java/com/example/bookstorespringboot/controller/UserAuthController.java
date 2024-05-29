@@ -10,6 +10,8 @@ import com.example.bookstorespringboot.service.UserService;
 import com.example.bookstorespringboot.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,8 +84,8 @@ public class UserAuthController {
     }
 
     @GetMapping("/admin/users")
-    public ResponseEntity<List<UserAuth>> getAllUsers() {
-        List<UserAuth> users = userAuthService.getAllUsers();
+    public ResponseEntity<Page<UserAuth>> getAllUsers(Pageable pageable) {
+        Page<UserAuth> users = userAuthService.getAllUsers(pageable);
         return ResponseEntity.ok(users);
     }
 

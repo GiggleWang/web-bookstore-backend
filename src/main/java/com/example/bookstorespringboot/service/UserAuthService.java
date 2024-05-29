@@ -5,6 +5,8 @@ import com.example.bookstorespringboot.model.Users;
 import com.example.bookstorespringboot.repository.UserAuthRepository;
 import com.example.bookstorespringboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -90,8 +92,8 @@ public class UserAuthService implements UserDetailsService {
         return userAuthRepository.save(userAuth);
     }
 
-    public List<UserAuth> getAllUsers() {
-        return userAuthRepository.findAll();
+    public Page<UserAuth> getAllUsers(Pageable pageable) {
+        return userAuthRepository.findAll(pageable);
     }
 
     public Optional<UserAuth> findUserByEmail(String email) {
