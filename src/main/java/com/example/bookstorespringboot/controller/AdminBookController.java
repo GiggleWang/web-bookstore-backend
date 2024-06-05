@@ -79,9 +79,9 @@ public class AdminBookController {
         existingBook.setAuthor(book.getAuthor());
         existingBook.setPrice(book.getPrice());
         existingBook.setDescription(book.getDescription());
-        existingBook.setSales(0);
         existingBook.setCover(book.getCover());
-
+        existingBook.setISBN(book.getISBN());
+        existingBook.setLeftNum(book.getLeftNum());
         return ResponseEntity.ok(bookService.saveBook(existingBook));
     }
 
